@@ -46,7 +46,11 @@ namespace ELearning.API.Services
             await _userRepository.SaveChangesAsync();
 
             var token = GenerateJwtToken(user);
-            return new LoginResponseDto { User = user, Token = token };
+            return new LoginResponseDto
+            {
+                User = MapToUserDto(user),
+                Token = token
+            };
         }
 
         public async Task<LoginResponseDto> LoginAsync(LoginDto loginDto)
@@ -60,7 +64,11 @@ namespace ELearning.API.Services
             }
 
             var token = GenerateJwtToken(user);
-            return new LoginResponseDto { User = user, Token = token };
+            return new LoginResponseDto
+            {
+                User = MapToUserDto(user),
+                Token = token
+            };
         }
 
         public async Task<UserDto> GetUserByIdAsync(Guid id)
@@ -171,7 +179,7 @@ namespace ELearning.API.Services
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        private static UserDto MapToUserDto(User user)
+        public static UserDto MapToUserDto(User user)
         {
             return new UserDto
             {
