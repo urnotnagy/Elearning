@@ -8,7 +8,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- Reference your API so Program is in scope -->
+
 		<ProjectReference Include="..\ELearning.API\ELearning.API.csproj" />
 	</ItemGroup>
 

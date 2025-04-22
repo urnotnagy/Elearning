@@ -9,7 +9,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELearning.Core", "ELearning
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELearning.Infrastructure", "ELearning.Infrastructure\ELearning.Infrastructure.csproj", "{C58A0D17-4E76-42BF-BC7C-8D14A282516C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Elearning.Tests", "Elearning.Tests\Elearning.Tests.csproj", "{C8CE9AF7-0E54-431F-863C-309AFA10D001}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ELearning.Tests", "ELearning.Tests\ELearning.Tests.csproj", "{C8CE9AF7-0E54-431F-863C-309AFA10D001}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9E8D06F-489B-4A0D-9BEF-7C30979F69F3}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci-cd.yml = .github\workflows\ci-cd.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,5 +41,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {0CCD1EC9-B975-4445-878C-D50B63159841}
 	EndGlobalSection
 EndGlobal
