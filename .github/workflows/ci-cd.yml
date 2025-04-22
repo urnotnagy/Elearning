@@ -36,10 +36,9 @@ jobs:
         run: dotnet tool install --global dotnet-ef --version 8.*
 
       # 6) Run EF Core migrations
-      - name: Apply EF migrations
-        run: dotnet ef database update \
-          --project ELearning.Infrastructure/ELearning.Infrastructure.csproj \
-          --startup-project ELearning.API/ELearning.API.csproj
+      - name: Apply EF Core migrations
+        run: dotnet ef database update --project ELearning.Infrastructure/ELearning.Infrastructure.csproj --startup-project ELearning.API/ELearning.API.csproj
+
 
       # 7) Smoke‑test the API’s /health endpoint
       - name: Run health check
