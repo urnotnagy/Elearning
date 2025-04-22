@@ -29,7 +29,7 @@ jobs:
 
       # 4) Run your unit/integration tests
       - name: Run tests
-        run: dotnet test --no-build --verbosity normal
+        run: dotnet test Elearning.Tests.csproj --no-build --verbosity normal
 
       # 5) Install EF Core CLI so `dotnet ef` can run
       - name: Install EF Core tool
