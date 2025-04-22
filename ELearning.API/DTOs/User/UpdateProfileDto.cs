@@ -1,6 +1,8 @@
+using ELearning.API.DTOs;
+
 namespace ELearning.API.DTOs.User
 {
-    public class UpdateProfileDto
+    public class UpdateProfileDto : BaseUpdateDto
     {
         public string? FirstName { get; set; }
         public string? LastName { get; set; }

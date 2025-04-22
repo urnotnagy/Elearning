@@ -66,6 +66,19 @@ namespace ELearning.Infrastructure.Data
                 .WithMany(u => u.LessonProgress)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Configure Category relationships
+            modelBuilder.Entity<Category>()
+                .HasOne(c => c.ParentCategory)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentCategoryId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // Configure many-to-many relationships
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Categories)
+                .WithMany(c => c.Courses)
+                .UsingEntity(j => j.ToTable("CourseCategories"));
+
             // Configure many-to-many relationships through Enrollment
             modelBuilder.Entity<Enrollment>()
                 .HasKey(e => new { e.StudentId, e.CourseId });
