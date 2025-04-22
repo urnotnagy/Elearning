@@ -44,13 +44,8 @@ jobs:
       # 7) Smoke‑test the API’s /health endpoint
       - name: Run health check
         working-directory: ELearning.API
-        env:
-          # ensure the app listens on port 5000
-          ASPNETCORE_URLS: http://localhost:5000
         run: |
-          # start the API in the background
-          dotnet run --no-build &
-          # wait for it to boot
+          dotnet run --no-build --urls http://localhost:5000 &
           for i in {1..10}; do
             if curl -fs http://localhost:5000/health; then
               echo "API is up!"
@@ -59,3 +54,4 @@ jobs:
             echo "Waiting for API..."
             sleep 2
           done
+
