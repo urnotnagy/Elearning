@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: .NET CI
 
 on:
   push:
@@ -11,72 +11,50 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      # 1) Checkout
+      - uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
+      # 2) Install the .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
 
-    - name: Restore dependencies
-      run: dotnet restore
+      # 3) Restore & build solution
+      - name: Restore dependencies
+        run: dotnet restore
 
-    - name: Build
-      run: dotnet build --no-restore
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
 
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
+      # 4) Run your unit/integration tests
+      - name: Run tests
+        run: dotnet test --no-build --verbosity normal
 
-    - name: Run EF Core migrations
-      run: |
-        cd ELearning.API
-        dotnet ef database update
+      # 5) Install EF Core CLI so `dotnet ef` can run
+      - name: Install EF Core tool
+        run: dotnet tool install --global dotnet-ef --version 8.*
 
-    - name: Run health check
-      run: |
-        cd ELearning.API
-        dotnet run --no-build &
-        sleep 10
-        curl -f http://localhost:5000/health || exit 1
-        curl -f http://localhost:5000/api/health || exit 1 
- 
+      # 6) Run EF Core migrations (against SQLite)
+      - name: Apply EF migrations
+        working-directory: ELearning.API
+        run: dotnet ef database update
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build-and-test:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: '8.0.x'
-
-    - name: Restore dependencies
-      run: dotnet restore
-
-    - name: Build
-      run: dotnet build --no-restore
-
-    - name: Run tests
-      run: dotnet test --no-build --verbosity normal
-
-    - name: Run EF Core migrations
-      run: |
-        cd ELearning.API
-        dotnet ef database update
-
-    - name: Run health check
-      run: |
-        cd ELearning.API
-        dotnet run --no-build &
-        sleep 10
-        curl -f http://localhost:5000/health || exit 1
-        curl -f http://localhost:5000/api/health || exit 1 
+      # 7) Smoke‑test the API’s /health endpoint
+      - name: Run health check
+        working-directory: ELearning.API
+        env:
+          # ensure the app listens on port 5000
+          ASPNETCORE_URLS: http://localhost:5000
+        run: |
+          # start the API in the background
+          dotnet run --no-build &
+          # wait for it to boot
+          for i in {1..10}; do
+            if curl -fs http://localhost:5000/health; then
+              echo "API is up!"
+              break
+            fi
+            echo "Waiting for API..."
+            sleep 2
+          done
