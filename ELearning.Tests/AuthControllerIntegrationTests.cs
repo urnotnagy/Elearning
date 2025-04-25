@@ -13,6 +13,7 @@ using Xunit;
 using Xunit.Abstractions;
 
 using ELearning.API;
+using ELearning.Infrastructure;
 using ELearning.Infrastructure.Data;
 using ELearning.API.DTOs.Auth;
 using ELearning.Core.Domain;
@@ -24,6 +25,7 @@ namespace ELearning.Tests
     {
         private readonly WebApplicationFactory<Program> _factory;
         private readonly ITestOutputHelper _output;
+        private readonly IConfiguration _configuration;
 
         public AuthControllerIntegrationTests(
             WebApplicationFactory<Program> factory,
@@ -38,6 +40,10 @@ namespace ELearning.Tests
                 ["JwtSettings:ExpiryInDays"] = "1"
             };
 
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(jwtSettings)
+                .Build();
+
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 // 1) Override configuration for both AuthService & JwtBearer
@@ -47,11 +53,17 @@ namespace ELearning.Tests
                 // 2) Swap in-memory EF Core for ApplicationDbContext
                 builder.ConfigureServices(services =>
                 {
+                    // 1) remove the old DbContext
                     var desc = services
                         .Single(d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                     services.Remove(desc);
+
+                    // 2) add the in-memory DbContext
                     services.AddDbContext<ApplicationDbContext>(opts =>
                         opts.UseInMemoryDatabase("TestDb"));
+
+                    // 3) re-apply Infrastructure wiring
+                    services.AddInfrastructure(_configuration);
                 });
             });
         }

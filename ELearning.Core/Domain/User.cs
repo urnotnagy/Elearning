@@ -16,8 +16,7 @@ namespace ELearning.Core.Domain
         public UserRole Role { get; set; }
         public bool IsActive { get; set; }
         public DateTime? LastLoginAt { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
+
 
         // Navigation properties
         public virtual ICollection<Course> InstructedCourses { get; set; } = new HashSet<Course>();
@@ -29,6 +28,8 @@ namespace ELearning.Core.Domain
         public virtual ICollection<Review> Reviews { get; set; } = new HashSet<Review>();
         public virtual ICollection<Progress> LessonProgress { get; set; } = new HashSet<Progress>();
         public virtual ICollection<Enrollment> Enrollments { get; set; } = new HashSet<Enrollment>();
+
+
     }
 
     public enum UserRole

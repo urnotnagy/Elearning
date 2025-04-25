@@ -10,6 +10,9 @@
 	<ItemGroup>
 
 		<ProjectReference Include="..\ELearning.API\ELearning.API.csproj" />
+		<ProjectReference Include="..\ELearning.Infrastructure\ELearning.Infrastructure.csproj" />
+		<ProjectReference Include="..\ELearning.Core\ELearning.Core.csproj" />
+	
 	</ItemGroup>
 
 	<ItemGroup>

@@ -109,7 +109,21 @@ namespace ELearning.Infrastructure.Data
             };
             modelBuilder.Entity<User>().HasData(users);
 
-            // Seed Courses
+            // Configure Course-Category relationship
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Categories)
+                .WithMany(c => c.Courses)
+                .UsingEntity(
+                    "CourseCategories",
+                    l => l.HasOne(typeof(Category)).WithMany().HasForeignKey("CategoriesId"),
+                    r => r.HasOne(typeof(Course)).WithMany().HasForeignKey("CoursesId"),
+                    j =>
+                    {
+                        j.HasKey("CoursesId", "CategoriesId");
+                        j.ToTable("CourseCategories");
+                    });
+
+            // Seed Courses (scalar data only)
             var csharpCourseId = Guid.NewGuid();
             var webDevCourseId = Guid.NewGuid();
             var dataScienceCourseId = Guid.NewGuid();
@@ -228,19 +242,29 @@ namespace ELearning.Infrastructure.Data
             };
             modelBuilder.Entity<Course>().HasData(courses);
 
-            // Seed Course-Category relationships
-            var courseCategories = new List<object>
-            {
-                new { CoursesId = csharpCourseId, CategoriesId = programmingCategoryId },
-                new { CoursesId = webDevCourseId, CategoriesId = webDevCategoryId },
-                new { CoursesId = dataScienceCourseId, CategoriesId = dataScienceCategoryId },
-                new { CoursesId = reactCourseId, CategoriesId = frontendCategoryId },
-                new { CoursesId = nodeJsCourseId, CategoriesId = backendCategoryId },
-                new { CoursesId = pythonCourseId, CategoriesId = dataScienceCategoryId },
-                new { CoursesId = flutterCourseId, CategoriesId = mobileDevCategoryId },
-                new { CoursesId = machineLearningCourseId, CategoriesId = machineLearningCategoryId }
-            };
-            modelBuilder.Entity<Course>().HasMany(c => c.Categories).WithMany(c => c.Courses).UsingEntity(j => j.HasData(courseCategories));
+            // Seed Course-Category relationships using the join table
+            modelBuilder.Entity<Course>()
+                .HasMany(c => c.Categories)
+                .WithMany(c => c.Courses)
+                .UsingEntity(
+                    "CourseCategories",
+                    l => l.HasOne(typeof(Category)).WithMany().HasForeignKey("CategoriesId"),
+                    r => r.HasOne(typeof(Course)).WithMany().HasForeignKey("CoursesId"),
+                    j =>
+                    {
+                        j.HasKey("CoursesId", "CategoriesId");
+                        j.ToTable("CourseCategories");
+                        j.HasData(
+                            new { CoursesId = csharpCourseId, CategoriesId = programmingCategoryId },
+                            new { CoursesId = webDevCourseId, CategoriesId = webDevCategoryId },
+                            new { CoursesId = dataScienceCourseId, CategoriesId = dataScienceCategoryId },
+                            new { CoursesId = reactCourseId, CategoriesId = frontendCategoryId },
+                            new { CoursesId = nodeJsCourseId, CategoriesId = backendCategoryId },
+                            new { CoursesId = pythonCourseId, CategoriesId = dataScienceCategoryId },
+                            new { CoursesId = flutterCourseId, CategoriesId = mobileDevCategoryId },
+                            new { CoursesId = machineLearningCourseId, CategoriesId = machineLearningCategoryId }
+                        );
+                    });
 
             // Seed Modules
             var moduleId = Guid.NewGuid();
@@ -249,8 +273,8 @@ namespace ELearning.Infrastructure.Data
                 new Module
                 {
                     Id = moduleId,
-                    Title = "Getting Started with C#",
-                    Description = "Learn the basics of C# syntax and programming concepts",
+                    Title = "Introduction to C#",
+                    Description = "Learn the basics of C# programming",
                     Order = 1,
                     CourseId = csharpCourseId,
                     CreatedAt = DateTime.UtcNow
@@ -265,11 +289,10 @@ namespace ELearning.Infrastructure.Data
                 new Lesson
                 {
                     Id = lessonId,
-                    Title = "Variables and Data Types",
-                    Description = "Understanding variables and data types in C#",
-                    Content = "In this lesson, we'll learn about variables and data types...",
+                    Title = "Getting Started with C#",
+                    Description = "Learn about C# and its features",
+                    Content = "C# is a modern, object-oriented programming language...",
                     Order = 1,
-                    DurationInMinutes = 30,
                     ModuleId = moduleId,
                     CreatedAt = DateTime.UtcNow
                 }

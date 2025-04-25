@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using ELearning.API.DTOs.Auth;
 using ELearning.API.DTOs.Category;
 using ELearning.Core.Domain;
+using ELearning.Infrastructure;
 using ELearning.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ namespace ELearning.Tests.Features.Categories
         private readonly WebApplicationFactory<Program> _factory;
         private readonly JsonSerializerOptions _jsonOptions;
         private readonly string _dbName;
+        private readonly IConfiguration _configuration;
 
         public CategoryControllerTests(WebApplicationFactory<Program> factory)
         {
@@ -35,6 +37,10 @@ namespace ELearning.Tests.Features.Categories
                 ["JwtSettings:ExpiryInDays"] = "1"
             };
 
+            _configuration = new ConfigurationBuilder()
+                .AddInMemoryCollection(jwtSettings)
+                .Build();
+
             _factory = factory.WithWebHostBuilder(builder =>
             {
                 builder.ConfigureAppConfiguration((ctx, cfg) =>
@@ -44,6 +50,7 @@ namespace ELearning.Tests.Features.Categories
 
                 builder.ConfigureServices(services =>
                 {
+                    // 1) remove the old DbContext
                     var descriptor = services.SingleOrDefault(
                         d => d.ServiceType == typeof(DbContextOptions<ApplicationDbContext>));
                     if (descriptor != null)
@@ -51,10 +58,14 @@ namespace ELearning.Tests.Features.Categories
                         services.Remove(descriptor);
                     }
 
+                    // 2) add the in-memory DbContext
                     services.AddDbContext<ApplicationDbContext>(options =>
                     {
                         options.UseInMemoryDatabase(_dbName);
                     });
+
+                    // 3) re-apply Infrastructure wiring
+                    services.AddInfrastructure(_configuration);
                 });
             });
 

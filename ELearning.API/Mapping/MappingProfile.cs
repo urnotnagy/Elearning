@@ -18,8 +18,11 @@ namespace ELearning.API.Mapping
                 .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.Reviews.Any() ? src.Reviews.Average(r => r.Rating) : 0))
                 .ForMember(dest => dest.CategoryNames, opt => opt.MapFrom(src => src.Categories.Select(c => c.Name)));
 
-            CreateMap<CreateCourseDto, Course>();
-            CreateMap<UpdateCourseDto, Course>();
+            CreateMap<CreateCourseDto, Course>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Name));
+            
+            CreateMap<UpdateCourseDto, Course>()
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Name));
 
             // User mappings
             CreateMap<User, UserDto>()

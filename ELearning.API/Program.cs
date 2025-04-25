@@ -1,5 +1,6 @@
 using System.Text;
 using ELearning.API.Services;
+using ELearning.API.Mapping;
 using ELearning.Core.Common;
 using ELearning.Core.Domain;
 using ELearning.Infrastructure;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,7 +43,7 @@ builder.Services.AddAuthentication(options =>
 });
 
 // Add AutoMapper
-builder.Services.AddAutoMapper(typeof(Program));
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 // Register services
 builder.Services.AddScoped<IAuthService, AuthService>();
@@ -59,6 +61,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("Admin"));
     options.AddPolicy("RequireInstructorRole", policy => policy.RequireRole("Instructor"));
     options.AddPolicy("RequireStudentRole", policy => policy.RequireRole("Student"));
+    options.AddPolicy("RequireAdminRole,RequireInstructorRole", policy => 
+        policy.RequireRole("Admin", "Instructor"));
 });
 
 builder.Services.AddControllers();
@@ -123,7 +127,3 @@ app.Run();
 
 public partial class Program { }
 
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
